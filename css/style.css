@@ -163,6 +163,13 @@ option {
   clear: both;
 }
 
+.alert {
+	color: tomato;
+	font-weight: bold;
+	font-size: 0.75em;
+	margin-left: 1em;
+}
+
 /* ================================= 
   Media Queries
 ==================================== */
