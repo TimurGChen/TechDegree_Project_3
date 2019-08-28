@@ -1,3 +1,12 @@
+/**
+ * TechDegree Project 3 -- Interactive Form
+ * 
+ * Guo Chen_08/28/2019
+ * 
+ * Please reject if not meeting Exceeds Expectation
+ * requirements. Thank you!
+ */
+
 //hides "other job" input field until it
 //is selected in the menu
 animateOtherJob = () => {
@@ -133,17 +142,17 @@ paySelect = () => {
     $('#payment').on('change', e => {
         const payOption = $(e.target).val();
         if (payOption === 'Credit Card') {
-            $credit.show();
-            $paypal.hide();
-            $bitcoin.hide();
+            $credit.slideDown();
+            $paypal.slideUp();
+            $bitcoin.slideUp();
         } else if (payOption === 'PayPal') {
-            $credit.hide();
-            $paypal.show();
-            $bitcoin.hide();
+            $credit.slideUp();
+            $paypal.slideDown();
+            $bitcoin.slideUp();
         } else if (payOption === 'Bitcoin') {
-            $credit.hide();
-            $paypal.hide();
-            $bitcoin.show();
+            $credit.slideUp();
+            $paypal.slideUp();
+            $bitcoin.slideDown();
         }
     });
 }
@@ -151,20 +160,18 @@ paySelect = () => {
 //Prepare the page ready for form submission
 //and provides criteria for validation
 validateForm = () => {
-    const $nameAlert = $('<span class="alert">Please enter a valid name</span>')
+    const $nameAlert = $('<span class="alert">Please enter your name</span>')
         .appendTo($('#name').prev());
-    const $emailAlert = $('<span class="alert">Please enter a valid email</span>')
+    const $emailAlert = $('<span class="alert">Please enter a valid email (e.g. myemail@example.com)</span>')
         .appendTo($('#mail').prev());
     const $actAlert = $('<span class="alert">Please select at least one activity</span>')
         .appendTo($('.activities legend'));
-    const $ccNumAlert = $('<br><span class="alert">Enter a card number with 13-16 digits</span>')
-        .appendTo($('#cc-num').prev());
-    const $zipAlert = $('<br><span class="alert">Enter a 5-digit zip code</span>')
-        .appendTo($('#zip').prev());
-    const $cvvAlert = $('<br><span class="alert">Enter a 3-digit CVV</span>')
-        .appendTo($('#cvv').prev());
-    //hides all alert messages
-    $('.alert').hide();
+    const $ccNumAlert = $('<span class="alert"></span>')
+        .appendTo($('#cc-num').parent());
+    const $zipAlert = $('<span class="alert">Enter a 5-digit zip code</span>')
+        .appendTo($('#zip').parent());
+    const $cvvAlert = $('<span class="alert">Enter a 3-digit CVV</span>')
+        .appendTo($('#cvv').parent());
 
     //gives the element a red outline
     //used as an alert indicator
@@ -190,7 +197,7 @@ validateForm = () => {
         const validEmail = /^[^@]+@[^@]+\.\w+$/.test($('#mail').val());
         if (!validEmail) {
             redOutline($('#mail'));
-            $emailAlert.show();
+            $emailAlert.show();          
         };
         return (validName && validEmail);
     }
@@ -221,7 +228,15 @@ validateForm = () => {
         if (!validCardNum) {
             redOutline($('#cc-num'));
             $ccNumAlert.show();
+            if ($('#cc-num').val() === '') {
+                $ccNumAlert.text('Please enter your credit card number');
+            } else if (/\D/.test($('#cc-num').val())) {
+                $ccNumAlert.text('Your input should contain numbers only');
+            } else {
+                $ccNumAlert.text('Please enter a number that is between 13 and 16 digits long');
+            };
         };
+
         const validZip = /^\d{5}$/.test($('#zip').val());
         if (!validZip) {
             redOutline($('#zip'));
@@ -248,6 +263,9 @@ validateForm = () => {
         }
     }
 
+    //hides all alert messages
+    $('.alert').hide();
+
     //determines whether the form can be
     //submitted and rejects invalid info
     $('form').on('submit', (e) => {
@@ -263,6 +281,36 @@ validateForm = () => {
     });
 }
 
+//displays error indication for zip & cvv input
+//in real time.
+//Though the function uses similar codes in validateForm(),
+//the following cannot be placed in validateForm, since
+//validation only takes place upon submission
+liveZipCvvErr = () => {
+    const $zip = $('#zip');
+    $zip.on('input', e => {
+        const validZip = /^\d{5}$/.test($zip.val());
+        if (validZip) {
+            $zip.css('outline', 'none');
+            $zip.next().hide(); //hides the alert span created in validateForm()
+        } else {
+            $zip.css('outline', 'solid').css('outline-color', 'red');
+            $zip.next().show(); //shows the alert span
+        };
+    });
+
+    const $cvv = $('#cvv');
+    $cvv.on('input', e => {
+        const validCvv = /^\d{3}$/.test($cvv.val());
+        if (validCvv) {
+            $cvv.css('outline', 'none');
+            $cvv.next().hide(); //hides the alert span created in validateForm()
+        } else {
+            $cvv.css('outline', 'solid').css('outline-color', 'red');
+            $cvv.next().show(); //shows the alert span
+        };
+    });
+}
 
 //sets the initial focus on name input
 $('#name').focus();
@@ -274,3 +322,4 @@ animateShirtColor();
 actSelectAssist();
 paySelect();
 validateForm();
+liveZipCvvErr();
